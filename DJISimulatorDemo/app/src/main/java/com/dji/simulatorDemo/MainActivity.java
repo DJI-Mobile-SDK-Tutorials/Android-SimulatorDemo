@@ -22,13 +22,16 @@ import android.widget.ToggleButton;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import dji.sdk.FlightController.DJIFlightController;
-import dji.sdk.FlightController.DJIFlightControllerDataType;
-import dji.sdk.FlightController.DJISimulator;
-import dji.sdk.Products.DJIAircraft;
-import dji.sdk.base.DJIBaseComponent;
+import dji.common.flightcontroller.DJISimulatorInitializationData;
+import dji.common.flightcontroller.DJISimulatorStateData;
+import dji.common.flightcontroller.DJIVirtualStickFlightControlData;
+import dji.common.util.DJICommonCallbacks;
+import dji.sdk.flightcontroller.DJIFlightController;
+import dji.common.flightcontroller.DJIFlightControllerDataType;
+import dji.sdk.flightcontroller.DJISimulator;
+import dji.sdk.products.DJIAircraft;
 import dji.sdk.base.DJIBaseProduct;
-import dji.sdk.base.DJIError;
+import dji.common.error.DJIError;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -180,7 +183,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             mFlightController = aircraft.getFlightController();
             mFlightController.getSimulator().setUpdatedSimulatorStateDataCallback(new DJISimulator.UpdatedSimulatorStateDataCallback() {
                 @Override
-                public void onSimulatorDataUpdated(final DJISimulator.DJISimulatorStateData djiSimulatorStateData) {
+                public void onSimulatorDataUpdated(final DJISimulatorStateData djiSimulatorStateData) {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
@@ -228,10 +231,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                     if (mFlightController != null) {
                         mFlightController.getSimulator()
-                                .startSimulator(new DJISimulator.DJISimulatorInitializationData(
+                                .startSimulator(new DJISimulatorInitializationData(
                                         23, 113, 10, 10
                                 )
-                                        , new DJIBaseComponent.DJICompletionCallback() {
+                                        , new DJICommonCallbacks.DJICompletionCallback() {
                                     @Override
                                     public void onResult(DJIError djiError) {
                                         if (djiError != null) {
@@ -251,7 +254,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     if (mFlightController != null) {
                         mFlightController.getSimulator()
                                 .stopSimulator(
-                                        new DJIBaseComponent.DJICompletionCallback() {
+                                        new DJICommonCallbacks.DJICompletionCallback() {
                                             @Override
                                             public void onResult(DJIError djiError) {
                                                 if (djiError != null) {
@@ -330,7 +333,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.btn_enable_virtual_stick:
                 if (mFlightController != null){
                     mFlightController.enableVirtualStickControlMode(
-                            new DJIBaseComponent.DJICompletionCallback() {
+                            new DJICommonCallbacks.DJICompletionCallback() {
                                 @Override
                                 public void onResult(DJIError djiError) {
                                     if (djiError != null){
@@ -348,7 +351,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.btn_disable_virtual_stick:
                 if (mFlightController != null){
                     mFlightController.disableVirtualStickControlMode(
-                            new DJIBaseComponent.DJICompletionCallback() {
+                            new DJICommonCallbacks.DJICompletionCallback() {
                                 @Override
                                 public void onResult(DJIError djiError) {
                                     if (djiError != null) {
@@ -365,7 +368,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.btn_take_off:
                 if (mFlightController != null){
                     mFlightController.takeOff(
-                            new DJIBaseComponent.DJICompletionCallback() {
+                            new DJICommonCallbacks.DJICompletionCallback() {
                                 @Override
                                 public void onResult(DJIError djiError) {
                                     if (djiError != null) {
@@ -384,7 +387,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 if (mFlightController != null){
 
                     mFlightController.autoLanding(
-                            new DJIBaseComponent.DJICompletionCallback() {
+                            new DJICommonCallbacks.DJICompletionCallback() {
                                 @Override
                                 public void onResult(DJIError djiError) {
                                     if (djiError != null) {
@@ -412,9 +415,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             if (mFlightController != null) {
                 mFlightController.sendVirtualStickFlightControlData(
-                        new DJIFlightControllerDataType.DJIVirtualStickFlightControlData(
+                        new DJIVirtualStickFlightControlData(
                                 mPitch, mRoll, mYaw, mThrottle
-                        ), new DJIBaseComponent.DJICompletionCallback() {
+                        ), new DJICommonCallbacks.DJICompletionCallback() {
                             @Override
                             public void onResult(DJIError djiError) {
 
