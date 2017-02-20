@@ -22,22 +22,22 @@ import android.widget.ToggleButton;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import dji.common.flightcontroller.DJISimulatorInitializationData;
-import dji.common.flightcontroller.DJISimulatorStateData;
-import dji.common.flightcontroller.DJIVirtualStickFlightControlData;
-import dji.common.util.DJICommonCallbacks;
-import dji.sdk.flightcontroller.DJIFlightController;
+import dji.common.flightcontroller.LocationCoordinate2D;
+import dji.common.flightcontroller.simulator.InitializationData;
+import dji.common.flightcontroller.simulator.SimulatorState;
+import dji.common.flightcontroller.virtualstick.FlightControlData;
+import dji.common.util.CommonCallbacks;
 import dji.common.flightcontroller.DJIFlightControllerDataType;
-import dji.sdk.flightcontroller.DJISimulator;
-import dji.sdk.products.DJIAircraft;
-import dji.sdk.base.DJIBaseProduct;
+import dji.sdk.base.BaseProduct;
+import dji.sdk.flightcontroller.FlightController;
+import dji.sdk.products.Aircraft;
 import dji.common.error.DJIError;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getName();
 
-    private DJIFlightController mFlightController;
+    private FlightController mFlightController;
 
     protected TextView mConnectStatusTextView;
 
@@ -109,15 +109,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void updateTitleBar() {
         if(mConnectStatusTextView == null) return;
         boolean ret = false;
-        DJIBaseProduct product = DJISimulatorApplication.getProductInstance();
+        BaseProduct product = DJISimulatorApplication.getProductInstance();
         if (product != null) {
             if(product.isConnected()) {
                 //The product is connected
                 mConnectStatusTextView.setText(DJISimulatorApplication.getProductInstance().getModel() + " Connected");
                 ret = true;
             } else {
-                if(product instanceof DJIAircraft) {
-                    DJIAircraft aircraft = (DJIAircraft)product;
+                if(product instanceof Aircraft) {
+                    Aircraft aircraft = (Aircraft)product;
                     if(aircraft.getRemoteController() != null && aircraft.getRemoteController().isConnected()) {
                         // The product is not connected, but the remote controller is connected
                         mConnectStatusTextView.setText("only RC Connected");
@@ -174,26 +174,26 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     private void initFlightController() {
 
-        DJIAircraft aircraft = DJISimulatorApplication.getAircraftInstance();
+        Aircraft aircraft = DJISimulatorApplication.getAircraftInstance();
         if (aircraft == null || !aircraft.isConnected()) {
             showToast("Disconnected");
             mFlightController = null;
             return;
         } else {
             mFlightController = aircraft.getFlightController();
-            mFlightController.getSimulator().setUpdatedSimulatorStateDataCallback(new DJISimulator.UpdatedSimulatorStateDataCallback() {
+            mFlightController.getSimulator().setStateCallback(new SimulatorState.Callback() {
                 @Override
-                public void onSimulatorDataUpdated(final DJISimulatorStateData djiSimulatorStateData) {
+                public void onUpdate(final SimulatorState stateData) {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
 
-                            String yaw = String.format("%.2f", djiSimulatorStateData.getYaw());
-                            String pitch = String.format("%.2f", djiSimulatorStateData.getPitch());
-                            String roll = String.format("%.2f", djiSimulatorStateData.getRoll());
-                            String positionX = String.format("%.2f", djiSimulatorStateData.getPositionX());
-                            String positionY = String.format("%.2f", djiSimulatorStateData.getPositionY());
-                            String positionZ = String.format("%.2f", djiSimulatorStateData.getPositionZ());
+                            String yaw = String.format("%.2f", stateData.getYaw());
+                            String pitch = String.format("%.2f", stateData.getPitch());
+                            String roll = String.format("%.2f", stateData.getRoll());
+                            String positionX = String.format("%.2f", stateData.getPositionX());
+                            String positionY = String.format("%.2f", stateData.getPositionY());
+                            String positionZ = String.format("%.2f", stateData.getPositionZ());
 
                             mTextView.setText("Yaw : " + yaw + ", Pitch : " + pitch + ", Roll : " + roll + "\n" + ", PosX : " + positionX +
                                     ", PosY : " + positionY +
@@ -230,11 +230,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     mTextView.setVisibility(View.VISIBLE);
 
                     if (mFlightController != null) {
+
                         mFlightController.getSimulator()
-                                .startSimulator(new DJISimulatorInitializationData(
-                                        23, 113, 10, 10
-                                )
-                                        , new DJICommonCallbacks.DJICompletionCallback() {
+                                .start(InitializationData.createInstance(new LocationCoordinate2D(23, 113), 10, 10),
+                                        new CommonCallbacks.CompletionCallback() {
                                     @Override
                                     public void onResult(DJIError djiError) {
                                         if (djiError != null) {
@@ -253,8 +252,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                     if (mFlightController != null) {
                         mFlightController.getSimulator()
-                                .stopSimulator(
-                                        new DJICommonCallbacks.DJICompletionCallback() {
+                                .stop(new CommonCallbacks.CompletionCallback() {
                                             @Override
                                             public void onResult(DJIError djiError) {
                                                 if (djiError != null) {
@@ -332,8 +330,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.btn_enable_virtual_stick:
                 if (mFlightController != null){
+
                     mFlightController.enableVirtualStickControlMode(
-                            new DJICommonCallbacks.DJICompletionCallback() {
+                            new CommonCallbacks.CompletionCallback() {
                                 @Override
                                 public void onResult(DJIError djiError) {
                                     if (djiError != null){
@@ -351,7 +350,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.btn_disable_virtual_stick:
                 if (mFlightController != null){
                     mFlightController.disableVirtualStickControlMode(
-                            new DJICommonCallbacks.DJICompletionCallback() {
+                            new CommonCallbacks.CompletionCallback() {
                                 @Override
                                 public void onResult(DJIError djiError) {
                                     if (djiError != null) {
@@ -367,8 +366,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             case R.id.btn_take_off:
                 if (mFlightController != null){
-                    mFlightController.takeOff(
-                            new DJICommonCallbacks.DJICompletionCallback() {
+                    mFlightController.startTakeoff(
+                            new CommonCallbacks.CompletionCallback() {
                                 @Override
                                 public void onResult(DJIError djiError) {
                                     if (djiError != null) {
@@ -386,14 +385,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.btn_land:
                 if (mFlightController != null){
 
-                    mFlightController.autoLanding(
-                            new DJICommonCallbacks.DJICompletionCallback() {
+                    mFlightController.startLanding(
+                            new CommonCallbacks.CompletionCallback() {
                                 @Override
                                 public void onResult(DJIError djiError) {
                                     if (djiError != null) {
                                         showToast(djiError.getDescription());
                                     } else {
-                                        showToast("AutoLand Started");
+                                        showToast("Start Landing");
                                     }
                                 }
                             }
@@ -415,9 +414,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             if (mFlightController != null) {
                 mFlightController.sendVirtualStickFlightControlData(
-                        new DJIVirtualStickFlightControlData(
+                        new FlightControlData(
                                 mPitch, mRoll, mYaw, mThrottle
-                        ), new DJICommonCallbacks.DJICompletionCallback() {
+                        ), new CommonCallbacks.CompletionCallback() {
                             @Override
                             public void onResult(DJIError djiError) {
 
