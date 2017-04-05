@@ -1,7 +1,5 @@
 # Android-SimulatorDemo
 
-> **Note: This Sample Project is developed based on Android SDK v3.5.1, an update version for Android SDK v4.0 will be published soon.**
-
 ## Introduction
 
 This demo is designed for you to learn how to use the `DJISimulator` in your Android Studio project using DJI Mobile SDK. With the help of Virtual Stick control, you can input Virtual Stick flight control data and check the changes of simulator state in real time.
@@ -10,7 +8,7 @@ This demo is designed for you to learn how to use the `DJISimulator` in your And
 
  - Android Studio 2.0+
  - Android System 4.1+
- - DJI Android SDK 3.5.1
+ - DJI Android SDK 4.0
  
 ## Tutorial
 
