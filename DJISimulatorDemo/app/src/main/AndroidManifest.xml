@@ -43,7 +43,7 @@
         -->
         <meta-data
             android:name="com.dji.sdk.API_KEY"
-            android:value="Please enter your App Key here" />
+            android:value="6eac1133a0489037b07f1b87" />
 
         <service android:name="dji.sdk.sdkmanager.DJIGlobalService" >
         </service>
