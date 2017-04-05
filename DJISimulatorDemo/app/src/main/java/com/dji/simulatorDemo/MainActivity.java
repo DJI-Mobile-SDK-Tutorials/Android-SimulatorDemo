@@ -22,12 +22,11 @@ import android.widget.ToggleButton;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import dji.common.flightcontroller.LocationCoordinate2D;
 import dji.common.flightcontroller.simulator.InitializationData;
 import dji.common.flightcontroller.simulator.SimulatorState;
 import dji.common.flightcontroller.virtualstick.FlightControlData;
+import dji.common.model.LocationCoordinate2D;
 import dji.common.util.CommonCallbacks;
-import dji.common.flightcontroller.DJIFlightControllerDataType;
 import dji.sdk.base.BaseProduct;
 import dji.sdk.flightcontroller.FlightController;
 import dji.sdk.products.Aircraft;
@@ -280,8 +279,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 if(Math.abs(pY) < 0.02 ){
                     pY = 0;
                 }
-                float pitchJoyControlMaxSpeed = DJIFlightControllerDataType.DJIVirtualStickRollPitchControlMaxVelocity;
-                float rollJoyControlMaxSpeed = DJIFlightControllerDataType.DJIVirtualStickRollPitchControlMaxVelocity;
+
+                float pitchJoyControlMaxSpeed = 10;
+                float rollJoyControlMaxSpeed = 10;
 
                 mPitch = (float)(pitchJoyControlMaxSpeed * pY);
 
@@ -308,8 +308,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 if(Math.abs(pY) < 0.02 ){
                     pY = 0;
                 }
-                float verticalJoyStickControlMaxSpeed = DJIFlightControllerDataType.DJIVirtualStickVerticalControlMaxVelocity;
-                float yawJoyStickControlMaxSpeed = DJIFlightControllerDataType.DJIVirtualStickYawControlMaxAngularVelocity;
+                float verticalJoyStickControlMaxSpeed = 2;
+                float yawJoyStickControlMaxSpeed = 3;
 
                 mYaw = (float)(yawJoyStickControlMaxSpeed * pX);
                 mThrottle = (float)(yawJoyStickControlMaxSpeed * pY);
@@ -331,36 +331,34 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.btn_enable_virtual_stick:
                 if (mFlightController != null){
 
-                    mFlightController.enableVirtualStickControlMode(
-                            new CommonCallbacks.CompletionCallback() {
-                                @Override
-                                public void onResult(DJIError djiError) {
-                                    if (djiError != null){
-                                        showToast(djiError.getDescription());
-                                    }else
-                                    {
-                                        showToast("Enable Virtual Stick Success");
-                                    }
-                                }
+                    mFlightController.setVirtualStickModeEnabled(true, new CommonCallbacks.CompletionCallback() {
+                        @Override
+                        public void onResult(DJIError djiError) {
+                            if (djiError != null){
+                                showToast(djiError.getDescription());
+                            }else
+                            {
+                                showToast("Enable Virtual Stick Success");
                             }
-                    );
+                        }
+                    });
+
                 }
                 break;
 
             case R.id.btn_disable_virtual_stick:
+
                 if (mFlightController != null){
-                    mFlightController.disableVirtualStickControlMode(
-                            new CommonCallbacks.CompletionCallback() {
-                                @Override
-                                public void onResult(DJIError djiError) {
-                                    if (djiError != null) {
-                                        showToast(djiError.getDescription());
-                                    } else {
-                                        showToast("Disable Virtual Stick Success");
-                                    }
-                                }
+                    mFlightController.setVirtualStickModeEnabled(false, new CommonCallbacks.CompletionCallback() {
+                        @Override
+                        public void onResult(DJIError djiError) {
+                            if (djiError != null) {
+                                showToast(djiError.getDescription());
+                            } else {
+                                showToast("Disable Virtual Stick Success");
                             }
-                    );
+                        }
+                    });
                 }
                 break;
 
