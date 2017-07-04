@@ -25,6 +25,10 @@ import java.util.TimerTask;
 import dji.common.flightcontroller.simulator.InitializationData;
 import dji.common.flightcontroller.simulator.SimulatorState;
 import dji.common.flightcontroller.virtualstick.FlightControlData;
+import dji.common.flightcontroller.virtualstick.FlightCoordinateSystem;
+import dji.common.flightcontroller.virtualstick.RollPitchControlMode;
+import dji.common.flightcontroller.virtualstick.VerticalControlMode;
+import dji.common.flightcontroller.virtualstick.YawControlMode;
 import dji.common.model.LocationCoordinate2D;
 import dji.common.util.CommonCallbacks;
 import dji.sdk.base.BaseProduct;
@@ -180,6 +184,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
             return;
         } else {
             mFlightController = aircraft.getFlightController();
+            mFlightController.setRollPitchControlMode(RollPitchControlMode.VELOCITY);
+            mFlightController.setYawControlMode(YawControlMode.ANGULAR_VELOCITY);
+            mFlightController.setVerticalControlMode(VerticalControlMode.VELOCITY);
+            mFlightController.setRollPitchCoordinateSystem(FlightCoordinateSystem.BODY);
             mFlightController.getSimulator().setStateCallback(new SimulatorState.Callback() {
                 @Override
                 public void onUpdate(final SimulatorState stateData) {
@@ -283,14 +291,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 float pitchJoyControlMaxSpeed = 10;
                 float rollJoyControlMaxSpeed = 10;
 
-                mPitch = (float)(pitchJoyControlMaxSpeed * pY);
+                mPitch = (float)(pitchJoyControlMaxSpeed * pX);
 
-                mRoll = (float)(rollJoyControlMaxSpeed * pX);
+                mRoll = (float)(rollJoyControlMaxSpeed * pY);
 
                 if (null == mSendVirtualStickDataTimer) {
                     mSendVirtualStickDataTask = new SendVirtualStickDataTask();
                     mSendVirtualStickDataTimer = new Timer();
-                    mSendVirtualStickDataTimer.schedule(mSendVirtualStickDataTask, 0, 200);
+                    mSendVirtualStickDataTimer.schedule(mSendVirtualStickDataTask, 100, 200);
                 }
 
             }
@@ -308,11 +316,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 if(Math.abs(pY) < 0.02 ){
                     pY = 0;
                 }
-                float verticalJoyStickControlMaxSpeed = 2;
-                float yawJoyStickControlMaxSpeed = 3;
+                float verticalJoyControlMaxSpeed = 2;
+                float yawJoyControlMaxSpeed = 30;
 
-                mYaw = (float)(yawJoyStickControlMaxSpeed * pX);
-                mThrottle = (float)(yawJoyStickControlMaxSpeed * pY);
+                mYaw = (float)(yawJoyControlMaxSpeed * pX);
+                mThrottle = (float)(verticalJoyControlMaxSpeed * pY);
 
                 if (null == mSendVirtualStickDataTimer) {
                     mSendVirtualStickDataTask = new SendVirtualStickDataTask();
