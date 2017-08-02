@@ -30,11 +30,13 @@ import dji.common.flightcontroller.virtualstick.RollPitchControlMode;
 import dji.common.flightcontroller.virtualstick.VerticalControlMode;
 import dji.common.flightcontroller.virtualstick.YawControlMode;
 import dji.common.model.LocationCoordinate2D;
+import dji.common.useraccount.UserAccountState;
 import dji.common.util.CommonCallbacks;
 import dji.sdk.base.BaseProduct;
 import dji.sdk.flightcontroller.FlightController;
 import dji.sdk.products.Aircraft;
 import dji.common.error.DJIError;
+import dji.sdk.useraccount.UserAccountManager;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -142,6 +144,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         super.onResume();
         updateTitleBar();
         initFlightController();
+        loginAccount();
+
     }
 
     @Override
@@ -173,6 +177,22 @@ public class MainActivity extends Activity implements View.OnClickListener {
             mSendVirtualStickDataTimer = null;
         }
         super.onDestroy();
+    }
+
+    private void loginAccount(){
+
+        UserAccountManager.getInstance().logIntoDJIUserAccount(this,
+                new CommonCallbacks.CompletionCallbackWith<UserAccountState>() {
+                    @Override
+                    public void onSuccess(final UserAccountState userAccountState) {
+                        Log.e(TAG, "Login Success");
+                    }
+                    @Override
+                    public void onFailure(DJIError error) {
+                        showToast("Login Error:"
+                                + error.getDescription());
+                    }
+                });
     }
 
     private void initFlightController() {
