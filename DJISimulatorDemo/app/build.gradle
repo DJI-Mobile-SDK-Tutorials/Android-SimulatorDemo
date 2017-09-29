@@ -30,5 +30,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:multidex:1.0.1'
-    compile 'com.dji:dji-sdk:4.3.0'
+    compile 'com.dji:dji-sdk:4.3.2'
 }
