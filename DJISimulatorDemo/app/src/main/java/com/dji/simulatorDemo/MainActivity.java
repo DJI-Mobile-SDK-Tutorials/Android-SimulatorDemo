@@ -46,6 +46,7 @@ import dji.sdk.base.BaseProduct;
 import dji.sdk.flightcontroller.FlightController;
 import dji.sdk.products.Aircraft;
 import dji.common.error.DJIError;
+import dji.sdk.sdkmanager.DJISDKInitEvent;
 import dji.sdk.sdkmanager.DJISDKManager;
 import dji.sdk.useraccount.UserAccountManager;
 
@@ -200,6 +201,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                             componentKey,
                                             oldComponent,
                                             newComponent));
+
+                        }
+                        @Override
+                        public void onInitProcess(DJISDKInitEvent djisdkInitEvent, int i) {
 
                         }
                     });
