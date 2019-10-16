@@ -11,10 +11,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +19,10 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -205,6 +206,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         }
                         @Override
                         public void onInitProcess(DJISDKInitEvent djisdkInitEvent, int i) {
+
+                        }
+
+                        @Override
+                        public void onDatabaseDownloadProgress(long l, long l1) {
 
                         }
                     });
