@@ -184,6 +184,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             showToast("Product Connected");
 
                         }
+
+                        @Override
+                        public void onProductChanged(BaseProduct baseProduct) {
+
+                        }
+
                         @Override
                         public void onComponentChange(BaseProduct.ComponentKey componentKey, BaseComponent oldComponent,
                                                       BaseComponent newComponent) {
