@@ -56,17 +56,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static final String TAG = MainActivity.class.getName();
 
     private static final String[] REQUIRED_PERMISSION_LIST = new String[]{
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
             Manifest.permission.VIBRATE,
             Manifest.permission.INTERNET,
             Manifest.permission.ACCESS_WIFI_STATE,
-            Manifest.permission.WAKE_LOCK,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.CHANGE_WIFI_STATE,
+            Manifest.permission.RECORD_AUDIO,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.BLUETOOTH,
-            Manifest.permission.BLUETOOTH_ADMIN,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.READ_PHONE_STATE,
     };
@@ -542,14 +542,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 if (mFlightController != null){
 
                     mFlightController.startLanding(
-                            new CommonCallbacks.CompletionCallback() {
-                                @Override
-                                public void onResult(DJIError djiError) {
-                                    if (djiError != null) {
-                                        showToast(djiError.getDescription());
-                                    } else {
-                                        showToast("Start Landing");
-                                    }
+                            djiError -> {
+                                if (djiError != null) {
+                                    showToast(djiError.getDescription());
+                                } else {
+                                    showToast("Start Landing");
                                 }
                             }
                     );
@@ -572,11 +569,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 mFlightController.sendVirtualStickFlightControlData(
                         new FlightControlData(
                                 mPitch, mRoll, mYaw, mThrottle
-                        ), new CommonCallbacks.CompletionCallback() {
-                            @Override
-                            public void onResult(DJIError djiError) {
+                        ), djiError -> {
 
-                            }
                         }
                 );
             }
