@@ -8,7 +8,7 @@ This demo is designed for you to learn how to use the `DJISimulator` in your And
 
  - Android Studio 4.2.1
  - Android System 5.0.0+
- - DJI Android SDK 4.15.1
+ - DJI Android SDK 4.16
  
 ## Tutorial
 
